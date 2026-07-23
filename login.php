@@ -57,7 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Generic message either way — never reveal whether the email exists.
             if (!$user || !password_verify($password, $user['password'])) {
                 $errors[] = 'Incorrect email or password.';
-            } else {
+            }  
+            else {
                 // ---- Start authenticated session ----
                 session_regenerate_id(true);
                 $_SESSION['user_id']   = $user['id'];

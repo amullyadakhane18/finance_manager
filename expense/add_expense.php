@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="dash-shell">
 
-  <?php $basePath = '../'; $activeNav = 'expense'; include __DIR__ . '/../includes/topbar.php'; ?>
+  <?php $basePath = '../'; $activeNav = 'expense'; include __DIR__ . '/../includes/sidebar.php'; ?>
 
   <main class="form-panel" style="width:100%;">
     <div class="form-card">

@@ -10,7 +10,7 @@
  *
  * Expects two variables set before including:
  *   $basePath  - '' for root-level pages, '../' for pages one folder deep (income/, expense/)
- *   $activeNav - one of: dashboard | income | expense | reports | budget
+ *   $activeNav - one of: dashboard | income | expense | reports | budget | profile
  */
 
 $basePath  = $basePath ?? '';
@@ -52,6 +52,11 @@ $navItems = [
         'label' => 'Budget',
         'href'  => 'budget.php',
         'icon'  => '<circle cx="12" cy="12" r="8.5"/><path d="M12 5v7l5 3"/>',
+    ],
+    'profile' => [
+        'label' => 'Profile',
+        'href'  => 'profile\view_profile.php',
+        'icon'  => '<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/>',
     ],
 ];
 
