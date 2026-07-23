@@ -36,3 +36,46 @@ function get_db_connection(): PDO
     return $pdo;
 }
 
+/*
+ * SQL to create the required table:
+ *
+ * CREATE TABLE users (
+ *   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   name VARCHAR(120) NOT NULL,
+ *   email VARCHAR(150) NOT NULL UNIQUE,
+ *   password VARCHAR(255) NOT NULL,
+ *   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+ * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ *
+ * CREATE TABLE income (
+ *   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   user_id INT UNSIGNED NOT NULL,
+ *   source VARCHAR(120) NOT NULL,
+ *   amount DECIMAL(12,2) NOT NULL,
+ *   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ *   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+ * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ *
+ * CREATE TABLE expenses (
+ *   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   user_id INT UNSIGNED NOT NULL,
+ *   category VARCHAR(120) NOT NULL,
+ *   amount DECIMAL(12,2) NOT NULL,
+ *   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ *   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+ * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ *
+ * CREATE TABLE budgets (
+ *   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ *   user_id INT UNSIGNED NOT NULL,
+ *   category VARCHAR(120) NOT NULL,
+ *   monthly_limit DECIMAL(12,2) NOT NULL,
+ *   alert_threshold TINYINT UNSIGNED NOT NULL DEFAULT 80,
+ *   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ *   UNIQUE KEY user_category (user_id, category),
+ *   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+ * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ *
+ * -- If you already created `budgets` before alert_threshold existed, run:
+ * -- ALTER TABLE budgets ADD COLUMN alert_threshold TINYINT UNSIGNED NOT NULL DEFAULT 80;
+ */

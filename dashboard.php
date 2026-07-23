@@ -54,7 +54,7 @@ try {
              UNION ALL
              (SELECT 'expense' AS type, id, category AS label, amount, created_at FROM expenses WHERE user_id = :uid2)
              ORDER BY created_at DESC
-             LIMIT 6"
+             LIMIT 8"
         );
         $stmt->execute(['uid1' => $userId, 'uid2' => $userId]);
         $recent = $stmt->fetchAll();
@@ -73,6 +73,7 @@ $balance = $totalIncome - $totalExpense;
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/images/favicon.png">
 <title>Dashboard — Finance Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -84,25 +85,7 @@ $balance = $totalIncome - $totalExpense;
 <div class="dash-shell">
 
   <!-- Top bar -->
-  <header class="dash-topbar">
-    <a href="dashboard.php" class="brand-mark brand-mark--dark">
-      <span class="brand-mark__glyph">₹</span>
-      <span class="brand-mark__word">Finance Manager</span>
-    </a>
-
-    <nav class="dash-nav">
-      <a href="dashboard.php" class="dash-nav__link is-active">Dashboard</a>
-      <a href="income/view_income.php" class="dash-nav__link">Income</a>
-      <a href="expense/view_expense.php" class="dash-nav__link">Expense</a>
-    </nav>
-
-    <form method="POST" action="logout.php" class="dash-topbar__logout">
-      <button type="submit" class="btn btn--ghost">
-        <svg viewBox="0 0 24 24" class="icon-inline"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-        Log out
-      </button>
-    </form>
-  </header>
+  <?php $basePath = ''; $activeNav = 'dashboard'; include __DIR__ . '/includes/topbar.php'; ?>
 
   <main class="dash-main">
 

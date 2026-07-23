@@ -8,6 +8,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../auth_check.php';
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/helper.php';
+require_once __DIR__ . '/../includes/categories.php';
 
 $userId = (int)$_SESSION['user_id'];
 $errors = [];
@@ -25,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $old = ['source' => $source, 'amount' => $amount, 'date' => $date !== '' ? $date : date('Y-m-d')];
 
-    if ($source === '' || mb_strlen($source) > 120) {
-        $errors[] = 'Please enter a source (e.g. Salary, Freelancing) under 120 characters.';
+    if ($source === '' || !in_array($source, INCOME_CATEGORIES, true)) {
+        $errors[] = 'Please choose a valid income category.';
     }
 
     if (!is_numeric($amount) || (float)$amount <= 0) {
@@ -74,24 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="dash-shell">
 
-  <header class="dash-topbar">
-    <a href="../dashboard.php" class="brand-mark brand-mark--dark">
-      <span class="brand-mark__glyph">₹</span>
-      <span class="brand-mark__word">Finance Manager</span>
-    </a>
-
-    <nav class="dash-nav">
-      <a href="../dashboard.php" class="dash-nav__link">Dashboard</a>
-      <a href="view_income.php" class="dash-nav__link is-active">Income</a>
-    </nav>
-
-    <form method="POST" action="../logout.php" class="dash-topbar__logout">
-      <button type="submit" class="btn btn--ghost">
-        <svg viewBox="0 0 24 24" class="icon-inline"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-        Log out
-      </button>
-    </form>
-  </header>
+  <?php $basePath = '../'; $activeNav = 'income'; include __DIR__ . '/../includes/topbar.php'; ?>
 
   <main class="form-panel" style="width:100%;">
     <div class="form-card">
@@ -116,16 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
 
         <div class="field">
-          <label for="source">Source</label>
-          <input
-            type="text"
-            id="source"
-            name="source"
-            placeholder="Salary, Freelancing, Interest..."
-            value="<?= htmlspecialchars($old['source'], ENT_QUOTES, 'UTF-8') ?>"
-            required
-            autofocus
-          >
+          <label for="source">Category</label>
+          <select id="source" name="source" required autofocus>
+            <option value="">Select a category</option>
+            <?= category_options(INCOME_CATEGORIES, $old['source']) ?>
+          </select>
         </div>
 
         <div class="field">

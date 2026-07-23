@@ -8,6 +8,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../auth_check.php';
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/helper.php';
+require_once __DIR__ . '/../includes/categories.php';
 
 $userId = (int)$_SESSION['user_id'];
 $errors = [];
@@ -25,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $old = ['category' => $category, 'amount' => $amount, 'date' => $date !== '' ? $date : date('Y-m-d')];
 
-    if ($category === '' || mb_strlen($category) > 120) {
-        $errors[] = 'Please enter a category (e.g. Food, Travel) under 120 characters.';
+    if ($category === '' || !in_array($category, EXPENSE_CATEGORIES, true)) {
+        $errors[] = 'Please choose a valid expense category.';
     }
 
     if (!is_numeric($amount) || (float)$amount <= 0) {
@@ -74,25 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="dash-shell">
 
-  <header class="dash-topbar">
-    <a href="../dashboard.php" class="brand-mark brand-mark--dark">
-      <span class="brand-mark__glyph">₹</span>
-      <span class="brand-mark__word">Finance Manager</span>
-    </a>
-
-    <nav class="dash-nav">
-      <a href="../dashboard.php" class="dash-nav__link">Dashboard</a>
-      <a href="../income/view_income.php" class="dash-nav__link">Income</a>
-      <a href="view_expense.php" class="dash-nav__link is-active">Expense</a>
-    </nav>
-
-    <form method="POST" action="../logout.php" class="dash-topbar__logout">
-      <button type="submit" class="btn btn--ghost">
-        <svg viewBox="0 0 24 24" class="icon-inline"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-        Log out
-      </button>
-    </form>
-  </header>
+  <?php $basePath = '../'; $activeNav = 'expense'; include __DIR__ . '/../includes/topbar.php'; ?>
 
   <main class="form-panel" style="width:100%;">
     <div class="form-card">
@@ -118,15 +101,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="field">
           <label for="category">Category</label>
-          <input
-            type="text"
-            id="category"
-            name="category"
-            placeholder="Food, Travel, Shopping..."
-            value="<?= htmlspecialchars($old['category'], ENT_QUOTES, 'UTF-8') ?>"
-            required
-            autofocus
-          >
+          <select id="category" name="category" required autofocus>
+            <option value="">Select a category</option>
+            <?= category_options(EXPENSE_CATEGORIES, $old['category']) ?>
+          </select>
         </div>
 
         <div class="field">

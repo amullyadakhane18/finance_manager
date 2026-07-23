@@ -9,19 +9,55 @@ declare(strict_types=1);
 require_once __DIR__ . '/../auth_check.php';
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/helper.php';
+require_once __DIR__ . '/../includes/categories.php';
 
 $userId = (int)$_SESSION['user_id'];
 $rows   = [];
 $total  = 0.0;
 $loadError = null;
 
+// ---- Search / filter inputs (all optional, combine with AND) ----
+$filters = [
+    'q'         => trim((string)($_GET['q'] ?? '')),
+    'category'  => trim((string)($_GET['category'] ?? '')),
+    'month'     => trim((string)($_GET['month'] ?? '')),
+    'date_from' => trim((string)($_GET['date_from'] ?? '')),
+    'date_to'   => trim((string)($_GET['date_to'] ?? '')),
+];
+$hasFilters = array_filter($filters) !== [];
+
 try {
     $pdo = get_db_connection();
 
-    $stmt = $pdo->prepare(
-        'SELECT id, source, amount, created_at FROM income WHERE user_id = :uid ORDER BY created_at DESC'
-    );
-    $stmt->execute(['uid' => $userId]);
+    $where  = ['user_id = :uid'];
+    $params = ['uid' => $userId];
+
+    if ($filters['q'] !== '') {
+        $where[] = 'source LIKE :q';
+        $params['q'] = '%' . $filters['q'] . '%';
+    }
+    if ($filters['category'] !== '' && in_array($filters['category'], INCOME_CATEGORIES, true)) {
+        $where[] = 'source = :category';
+        $params['category'] = $filters['category'];
+    }
+    if ($filters['month'] !== '' && preg_match('/^\d{4}-\d{2}$/', $filters['month'])) {
+        $where[] = "DATE_FORMAT(created_at, '%Y-%m') = :month";
+        $params['month'] = $filters['month'];
+    }
+    if ($filters['date_from'] !== '') {
+        $where[] = 'created_at >= :date_from';
+        $params['date_from'] = $filters['date_from'] . ' 00:00:00';
+    }
+    if ($filters['date_to'] !== '') {
+        $where[] = 'created_at <= :date_to';
+        $params['date_to'] = $filters['date_to'] . ' 23:59:59';
+    }
+
+    $sql = 'SELECT id, source, amount, created_at FROM income WHERE '
+        . implode(' AND ', $where) . ' ORDER BY created_at DESC';
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $rows = $stmt->fetchAll();
 
     foreach ($rows as $row) {
@@ -43,6 +79,7 @@ if (isset($_GET['deleted'])) { $flash = 'Income entry deleted.'; }
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../assets/images/favicon.png">
 <title>Income — Finance Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,25 +90,7 @@ if (isset($_GET['deleted'])) { $flash = 'Income entry deleted.'; }
 
 <div class="dash-shell">
 
-  <header class="dash-topbar">
-    <a href="../dashboard.php" class="brand-mark brand-mark--dark">
-      <span class="brand-mark__glyph">₹</span>
-      <span class="brand-mark__word">Finance Manager</span>
-    </a>
-
-    <nav class="dash-nav">
-      <a href="../dashboard.php" class="dash-nav__link">Dashboard</a>
-      <a href="view_income.php" class="dash-nav__link is-active">Income</a>
-      <a href="expense/view_expense.php" class="dash-nav__link">Expense</a>
-    </nav>
-
-    <form method="POST" action="../logout.php" class="dash-topbar__logout">
-      <button type="submit" class="btn btn--ghost">
-        <svg viewBox="0 0 24 24" class="icon-inline"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-        Log out
-      </button>
-    </form>
-  </header>
+  <?php $basePath = '../'; $activeNav = 'income'; include __DIR__ . '/../includes/topbar.php'; ?>
 
   <main class="dash-main">
 
@@ -94,6 +113,40 @@ if (isset($_GET['deleted'])) { $flash = 'Income entry deleted.'; }
       <div class="alert alert--error" role="alert"><?= htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8') ?></div>
     <?php endif; ?>
 
+    <section class="dash-panel filter-panel">
+      <form method="GET" action="view_income.php" class="filter-form">
+        <div class="filter-field filter-field--grow">
+          <label for="q">Search</label>
+          <input type="text" id="q" name="q" placeholder="Search by keyword..." value="<?= htmlspecialchars($filters['q'], ENT_QUOTES, 'UTF-8') ?>">
+        </div>
+        <div class="filter-field">
+          <label for="category">Category</label>
+          <select id="category" name="category">
+            <option value="">All categories</option>
+            <?= category_options(INCOME_CATEGORIES, $filters['category']) ?>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="month">Month</label>
+          <input type="month" id="month" name="month" value="<?= htmlspecialchars($filters['month'], ENT_QUOTES, 'UTF-8') ?>">
+        </div>
+        <div class="filter-field">
+          <label for="date_from">From</label>
+          <input type="date" id="date_from" name="date_from" value="<?= htmlspecialchars($filters['date_from'], ENT_QUOTES, 'UTF-8') ?>">
+        </div>
+        <div class="filter-field">
+          <label for="date_to">To</label>
+          <input type="date" id="date_to" name="date_to" value="<?= htmlspecialchars($filters['date_to'], ENT_QUOTES, 'UTF-8') ?>">
+        </div>
+        <div class="filter-field filter-field--actions">
+          <button type="submit" class="btn btn--primary">Filter</button>
+          <?php if ($hasFilters): ?>
+            <a href="view_income.php" class="btn btn--ghost">Reset</a>
+          <?php endif; ?>
+        </div>
+      </form>
+    </section>
+
     <section class="dash-panel">
       <header class="dash-panel__header">
         <h2>All entries</h2>
@@ -102,7 +155,11 @@ if (isset($_GET['deleted'])) { $flash = 'Income entry deleted.'; }
 
       <?php if (empty($rows)): ?>
         <div class="empty-state">
-          <p>No income logged yet. Click <strong>Add income</strong> above to record your first entry.</p>
+          <?php if ($hasFilters): ?>
+            <p>No income entries match these filters. Try widening your search or <a href="view_income.php">clear the filters</a>.</p>
+          <?php else: ?>
+            <p>No income logged yet. Click <strong>Add income</strong> above to record your first entry.</p>
+          <?php endif; ?>
         </div>
       <?php else: ?>
         <div class="table-wrap">

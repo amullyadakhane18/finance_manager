@@ -43,6 +43,7 @@ if (isset($_GET['deleted'])) { $flash = 'Expense deleted.'; }
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../assets/images/favicon.png">
 <title>Expense — Finance Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,6 +64,8 @@ if (isset($_GET['deleted'])) { $flash = 'Expense deleted.'; }
       <a href="../dashboard.php" class="dash-nav__link">Dashboard</a>
       <a href="../income/view_income.php" class="dash-nav__link">Income</a>
       <a href="view_expense.php" class="dash-nav__link is-active">Expense</a>
+      <a href="../reports.php" class="dash-nav__link ">Reports</a>
+      <a href="../budget.php" class="dash-nav__link ">Budget</a>
     </nav>
 
     <form method="POST" action="../logout.php" class="dash-topbar__logout">
