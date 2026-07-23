@@ -54,27 +54,7 @@ if (isset($_GET['deleted'])) { $flash = 'Expense deleted.'; }
 
 <div class="dash-shell">
 
-  <header class="dash-topbar">
-    <a href="../dashboard.php" class="brand-mark brand-mark--dark">
-      <span class="brand-mark__glyph">₹</span>
-      <span class="brand-mark__word">Finance Manager</span>
-    </a>
-
-    <nav class="dash-nav">
-      <a href="../dashboard.php" class="dash-nav__link">Dashboard</a>
-      <a href="../income/view_income.php" class="dash-nav__link">Income</a>
-      <a href="view_expense.php" class="dash-nav__link is-active">Expense</a>
-      <a href="../reports.php" class="dash-nav__link ">Reports</a>
-      <a href="../budget.php" class="dash-nav__link ">Budget</a>
-    </nav>
-
-    <form method="POST" action="../logout.php" class="dash-topbar__logout">
-      <button type="submit" class="btn btn--ghost">
-        <svg viewBox="0 0 24 24" class="icon-inline"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-        Log out
-      </button>
-    </form>
-  </header>
+<?php $basePath = '../'; $activeNav = 'expense'; include __DIR__ . '/../includes/sidebar.php'; ?>
 
   <main class="dash-main">
 

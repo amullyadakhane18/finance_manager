@@ -200,7 +200,7 @@ if (!$loadError) {
 
 <div class="dash-shell">
 
-  <?php $basePath = ''; $activeNav = 'budget'; include __DIR__ . '/includes/topbar.php'; ?>
+  <?php $basePath = ''; $activeNav = 'budget'; include __DIR__ . '/includes/sidebar.php'; ?>
 
   <main class="dash-main">
 

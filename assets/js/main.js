@@ -64,43 +64,4 @@ document.addEventListener('DOMContentLoaded', function () {
         confirmInput.addEventListener('input', checkMatch);
         passwordInput.addEventListener('input', checkMatch);
     }
-
-    // ---- Mobile / tablet navbar toggle ----
-    var navToggle = document.getElementById('navbarToggle');
-    var dashNav = document.getElementById('dashNav');
-
-    if (navToggle && dashNav) {
-        navToggle.addEventListener('click', function () {
-            var isOpen = dashNav.classList.toggle('is-open');
-            navToggle.classList.toggle('is-open', isOpen);
-            navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        });
-
-        // Close the menu once a link inside it is used (mobile/tablet UX)
-        dashNav.querySelectorAll('a, button').forEach(function (el) {
-            el.addEventListener('click', function () {
-                dashNav.classList.remove('is-open');
-                navToggle.classList.remove('is-open');
-                navToggle.setAttribute('aria-expanded', 'false');
-            });
-        });
-
-        // Close the menu if the viewport is resized up to desktop width
-        window.addEventListener('resize', function () {
-            if (window.innerWidth >= 1024 && dashNav.classList.contains('is-open')) {
-                dashNav.classList.remove('is-open');
-                navToggle.classList.remove('is-open');
-                navToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        // Close the menu when tapping/clicking outside of it
-        document.addEventListener('click', function (event) {
-            if (!dashNav.classList.contains('is-open')) return;
-            if (dashNav.contains(event.target) || navToggle.contains(event.target)) return;
-            dashNav.classList.remove('is-open');
-            navToggle.classList.remove('is-open');
-            navToggle.setAttribute('aria-expanded', 'false');
-        });
-    }
 });

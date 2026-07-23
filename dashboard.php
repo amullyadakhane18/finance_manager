@@ -85,7 +85,7 @@ $balance = $totalIncome - $totalExpense;
 <div class="dash-shell">
 
   <!-- Top bar -->
-  <?php $basePath = ''; $activeNav = 'dashboard'; include __DIR__ . '/includes/topbar.php'; ?>
+  <?php $basePath = ''; $activeNav = 'dashboard'; include __DIR__ . '/includes/sidebar.php'; ?>
 
   <main class="dash-main">
 

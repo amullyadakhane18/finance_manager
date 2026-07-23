@@ -129,7 +129,7 @@ $savings = $monthIncome - $monthExpense;
 
 <div class="dash-shell">
 
-  <?php $basePath = ''; $activeNav = 'reports'; include __DIR__ . '/includes/topbar.php'; ?>
+  <?php $basePath = ''; $activeNav = 'reports'; include __DIR__ . '/includes/sidebar.php'; ?>
 
   <main class="dash-main">
 
