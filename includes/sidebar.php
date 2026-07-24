@@ -104,7 +104,7 @@ function nav_icon_or_avatar(string $key, array $item, ?string $photoUrl, string 
 <aside class="dash-sidebar" aria-label="Primary navigation">
   <a href="<?= $basePath ?>dashboard.php" class="sidebar-brand">
     <span class="brand-mark__glyph">₹</span>
-    <span class="brand-mark__word">Finance Manager</span>
+    <span class="brand-mark__word">Dhan sathi</span>
   </a>
 
   <nav class="sidebar-nav">
@@ -128,7 +128,7 @@ function nav_icon_or_avatar(string $key, array $item, ?string $photoUrl, string 
 <header class="mobile-topbar">
   <a href="<?= $basePath ?>dashboard.php" class="brand-mark brand-mark--dark">
     <span class="brand-mark__glyph">₹</span>
-    <span class="brand-mark__word">Finance Manager</span>
+    <span class="brand-mark__word">Dhan sathi</span>
   </a>
 
   <form method="POST" action="<?= $basePath ?>logout.php">

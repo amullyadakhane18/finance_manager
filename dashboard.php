@@ -68,6 +68,37 @@ try {
 }
 
 $balance = $totalIncome - $totalExpense;
+
+// A lightweight, local-only money health indicator. It rewards keeping
+// expenses below income and remains useful even before budgets are set up.
+$healthScore = null;
+$healthLabel = 'Ready when you are';
+$healthMessage = 'Add an income or expense to unlock your personalised money snapshot.';
+$healthTone = 'starting';
+
+if ($totalIncome > 0 || $totalExpense > 0) {
+    $healthScore = $totalIncome > 0
+        ? (int) max(0, min(100, round(100 - (($totalExpense / $totalIncome) * 70))))
+        : 0;
+
+    if ($healthScore >= 80) {
+        $healthLabel = 'Excellent shape';
+        $healthMessage = 'You are keeping a strong share of your income. Keep building that cushion.';
+        $healthTone = 'excellent';
+    } elseif ($healthScore >= 60) {
+        $healthLabel = 'Looking healthy';
+        $healthMessage = 'Your spending is in a comfortable range. A small saving habit can lift this further.';
+        $healthTone = 'good';
+    } elseif ($healthScore >= 40) {
+        $healthLabel = 'Worth watching';
+        $healthMessage = 'Spending is taking up a large part of your income. Review your recent expenses.';
+        $healthTone = 'watch';
+    } else {
+        $healthLabel = 'Needs attention';
+        $healthMessage = 'Your expenses are close to or above your income. Start with one expense to reduce.';
+        $healthTone = 'attention';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -133,6 +164,25 @@ $balance = $totalIncome - $totalExpense;
         </div>
       </article>
 
+    </section>
+
+    <!-- Financial health snapshot -->
+    <section class="health-snapshot health-snapshot--<?= $healthTone ?>" aria-labelledby="health-title">
+      <div class="health-snapshot__score"<?= $healthScore !== null ? ' style="--health-score: ' . $healthScore . '"' : '' ?> aria-label="<?= $healthScore !== null ? 'Financial health score: ' . $healthScore . ' out of 100' : 'Financial health score unavailable until you add a transaction' ?>">
+        <div class="health-snapshot__score-inner">
+          <strong><?= $healthScore !== null ? $healthScore : '—' ?></strong>
+          <span><?= $healthScore !== null ? '/ 100' : 'start' ?></span>
+        </div>
+      </div>
+      <div class="health-snapshot__content">
+        <span class="health-snapshot__eyebrow">Financial health snapshot</span>
+        <h2 id="health-title"><?= $healthLabel ?></h2>
+        <p><?= $healthMessage ?></p>
+      </div>
+      <a class="health-snapshot__link" href="<?= $healthScore !== null && $healthScore < 60 ? 'expense/view_expense.php' : 'income/add_income.php' ?>">
+        <?= $healthScore !== null && $healthScore < 60 ? 'Review spending' : 'Add income' ?>
+        <span aria-hidden="true">→</span>
+      </a>
     </section>
 
     <!-- Recent transactions (Stage 4, optional) -->

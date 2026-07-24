@@ -41,7 +41,7 @@ function get_db_connection(): PDO
  *
  * CREATE TABLE users (
  *   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
- *   name VARCHAR(120) NOT NULL,
+ *   full_name VARCHAR(120) NOT NULL,
  *   email VARCHAR(150) NOT NULL UNIQUE,
  *   password VARCHAR(255) NOT NULL,
  *   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

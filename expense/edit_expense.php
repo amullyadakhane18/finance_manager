@@ -70,8 +70,7 @@ if ($pdo && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Please enter a valid amount greater than 0.';
     }
 
-    $dateTime = DateTime::createFromFormat('Y-m-d', $date);
-    if (!$dateTime) {
+    if (!is_valid_iso_date($date)) {
         $errors[] = 'Please enter a valid date.';
     }
 

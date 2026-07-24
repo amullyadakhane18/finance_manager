@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header('Location: view_profile.php?updated=profile');
                     exit;
                 } catch (PDOException $e2) {
-                    die($e->getMessage());
+                    $errors[] = "Couldn't save your profile right now. Please try again.";
                 }
             }
         }

@@ -167,7 +167,6 @@ $pwChanged   = !empty($user['password_changed_at']) ? date('d M Y', strtotime($u
         <div class="profile-actions">
           <a href="edit_profile.php" class="btn btn--primary">Edit profile</a>
           <a href="change_password.php" class="btn btn--ghost">Change password</a>
-        </div>
       </div>
     </section>
 

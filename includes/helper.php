@@ -20,3 +20,15 @@ if (!function_exists('verify_csrf')) {
             && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
     }
 }
+
+if (!function_exists('is_valid_iso_date')) {
+    function is_valid_iso_date(string $value): bool
+    {
+        $date = DateTime::createFromFormat('!Y-m-d', $value);
+        $errors = DateTime::getLastErrors();
+
+        return $date !== false
+            && ($errors === false || ($errors['warning_count'] === 0 && $errors['error_count'] === 0))
+            && $date->format('Y-m-d') === $value;
+    }
+}

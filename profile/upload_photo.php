@@ -34,11 +34,14 @@ try {
     $stmt->execute(['uid' => $userId]);
     $currentPhoto = $stmt->fetchColumn() ?: null;
 } catch (PDOException $e) {
-     die("Database Error: " . $e->getMessage());
+    $currentPhoto = null;
+    $errors[] = "Couldn't load your profile right now. Please try again shortly.";
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!verify_csrf()) {
+    if (!empty($errors)) {
+        // Database setup/load failed above; never attempt an upload without a connection.
+    } elseif (!verify_csrf()) {
         $errors[] = 'Your session has expired. Please refresh the page and try again.';
     } elseif (empty($_FILES['photo']) || $_FILES['photo']['error'] === UPLOAD_ERR_NO_FILE) {
         $errors[] = 'Choose a photo to upload.';
