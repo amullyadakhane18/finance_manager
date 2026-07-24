@@ -51,13 +51,13 @@ try {
     // ---- User record (new columns first, fall back if not migrated yet) ----
     try {
         $stmt = $pdo->prepare(
-            'SELECT id, name, email, phone, profile_photo, created_at, last_login, status, password_changed_at
+            'SELECT id, full_name, email, phone, profile_photo, created_at, last_login, status, password_changed_at
              FROM users WHERE id = :uid'
         );
         $stmt->execute(['uid' => $userId]);
         $user = $stmt->fetch();
     } catch (PDOException $e) {
-        $stmt = $pdo->prepare('SELECT id, name, email, created_at FROM users WHERE id = :uid');
+        $stmt = $pdo->prepare('SELECT id, full_name, email, created_at FROM users WHERE id = :uid');
         $stmt->execute(['uid' => $userId]);
         $user = $stmt->fetch();
         $loadError = "Some profile fields aren't set up yet. Run the ALTER TABLE statement at the top of this file, then refresh.";
@@ -94,7 +94,7 @@ try {
 $balance = $totalIncome - $totalExpense;
 
 // ---- Safe fallbacks for optional/new fields ----
-$name        = $user['name'] ?? 'there';
+$full_name   = $user['full_name'] ?? 'there';
 $email       = $user['email'] ?? '';
 $phone       = $user['phone'] ?? null;
 $photo       = $user['profile_photo'] ?? null;
@@ -110,6 +110,7 @@ $pwChanged   = !empty($user['password_changed_at']) ? date('d M Y', strtotime($u
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile — Finance Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" href="../assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= $basePath ?>assets/css/style.css">
@@ -155,7 +156,7 @@ $pwChanged   = !empty($user['password_changed_at']) ? date('d M Y', strtotime($u
       </div>
 
       <div class="profile-info">
-        <h2 class="profile-info__name"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></h2>
+        <h2 class="profile-info__name"><?= htmlspecialchars($full_name, ENT_QUOTES, 'UTF-8') ?></h2>
         <div class="profile-meta">
           <span class="profile-meta__row"><strong>Email:</strong> <?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?></span>
           <?php if ($phone): ?>

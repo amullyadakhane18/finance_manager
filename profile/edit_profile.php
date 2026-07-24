@@ -68,26 +68,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($errors)) {
             try {
-                $stmt = $pdo->prepare('UPDATE users SET name = :name, email = :email, phone = :phone WHERE id = :uid');
+                $stmt = $pdo->prepare('UPDATE users SET full_name = :full_name, email = :email, phone = :phone WHERE id = :uid');
                 $stmt->execute([
-                    'name'  => $name,
+                    'full_name'  => $name,
                     'email' => $email,
                     'phone' => $phone !== '' ? $phone : null,
                     'uid'   => $userId,
                 ]);
                 $_SESSION['user_name'] = $name;
-                header('Location: profile.php?updated=profile');
+                header('Location: view_profile.php?updated=profile');
                 exit;
             } catch (PDOException $e) {
                 // Most likely the `phone` column isn't there yet — retry without it.
                 try {
-                    $stmt = $pdo->prepare('UPDATE users SET name = :name, email = :email WHERE id = :uid');
-                    $stmt->execute(['name' => $name, 'email' => $email, 'uid' => $userId]);
+                    $stmt = $pdo->prepare('UPDATE users SET full_name = :full_name, email = :email WHERE id = :uid');
+                    $stmt->execute(['full_name' => $name, 'email' => $email, 'uid' => $userId]);
                     $_SESSION['user_name'] = $name;
-                    header('Location: profile.php?updated=profile');
+                    header('Location: view_profile.php?updated=profile');
                     exit;
                 } catch (PDOException $e2) {
-                    $errors[] = "Couldn't save your changes. Please try again.";
+                    die($e->getMessage());
                 }
             }
         }
@@ -101,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edit Profile — Finance Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" href="../assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= $basePath ?>assets/css/style.css">
@@ -149,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="form-actions">
           <button type="submit" class="btn btn--primary">Save changes</button>
-          <a href="profile.php" class="btn btn--ghost">Cancel</a>
+          <a href="view_profile.php" class="btn btn--ghost">Cancel</a>
         </div>
       </form>
     </section>

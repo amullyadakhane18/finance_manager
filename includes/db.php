@@ -10,7 +10,7 @@ define('DB_CHARSET', 'utf8mb4');
  
 /**
  * Returns a PDO connection. Throws PDOException on failure,
- * which is caught by whichever page includes this file.
+ * which is caught by whichever page includes this filcae.
  */
 function get_db_connection(): PDO
 {

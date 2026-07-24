@@ -34,7 +34,7 @@ try {
     $stmt->execute(['uid' => $userId]);
     $currentPhoto = $stmt->fetchColumn() ?: null;
 } catch (PDOException $e) {
-    $currentPhoto = null;
+     die("Database Error: " . $e->getMessage());
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             @unlink($uploadDir . $currentPhoto);
                         }
 
-                        header('Location: profile.php?updated=photo');
+                        header('Location: view_profile.php?updated=photo');
                         exit;
                     } catch (PDOException $e) {
                         @unlink($destination);
@@ -94,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Upload Profile Picture — Finance Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" href="../assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= $basePath ?>assets/css/style.css">
@@ -144,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="form-actions">
           <button type="submit" class="btn btn--primary">Upload photo</button>
-          <a href="profile.php" class="btn btn--ghost">Cancel</a>
+          <a href="view_profile.php" class="btn btn--ghost">Cancel</a>
         </div>
       </form>
     </section>

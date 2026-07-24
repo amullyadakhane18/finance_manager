@@ -22,6 +22,7 @@ require_once __DIR__ . '/includes/helper.php';
 $userId   = (int)$_SESSION['user_id'];
 $userName = $_SESSION['user_name'] ?? 'there';
 
+
 $totalIncome  = 0.0;
 $totalExpense = 0.0;
 $recent       = [];

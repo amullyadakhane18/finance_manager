@@ -55,7 +55,7 @@ $navItems = [
     ],
     'profile' => [
         'label' => 'Profile',
-        'href'  => 'profile\view_profile.php',
+        'href'  => 'profile/view_profile.php',
         'icon'  => '<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/>',
     ],
 ];
@@ -68,6 +68,37 @@ function nav_icon(string $fragment, string $class = 'nav-icon'): string
 }
 
 $logoutIcon = '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>';
+
+/**
+ * If the person is logged in and a photo has been uploaded, show it as the
+ * Profile nav icon instead of the generic person icon. Safe to call even
+ * before the profile_photo column/migration exists — falls back silently.
+ */
+$userPhotoUrl = null;
+if (!empty($_SESSION['user_id']) && function_exists('get_db_connection')) {
+    try {
+        $stmt = get_db_connection()->prepare('SELECT profile_photo FROM users WHERE id = :uid');
+        $stmt->execute(['uid' => (int)$_SESSION['user_id']]);
+        $photo = $stmt->fetchColumn();
+        if ($photo) {
+            $userPhotoUrl = $basePath . 'profile/uploads/' . $photo;
+        }
+    } catch (Throwable $e) {
+        // profile_photo column not migrated yet, or DB unavailable — icon fallback below.
+    }
+}
+
+/**
+ * Renders either the uploaded avatar (for the 'profile' item, if set) or
+ * the item's normal line icon.
+ */
+function nav_icon_or_avatar(string $key, array $item, ?string $photoUrl, string $class): string
+{
+    if ($key === 'profile' && $photoUrl) {
+        return '<img src="' . htmlspecialchars($photoUrl, ENT_QUOTES, 'UTF-8') . '" alt="" class="' . $class . '-avatar">';
+    }
+    return nav_icon($item['icon'], $class);
+}
 ?>
 <!-- ============ Desktop sidebar (>= 880px) ============ -->
 <aside class="dash-sidebar" aria-label="Primary navigation">
@@ -79,7 +110,7 @@ $logoutIcon = '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 1
   <nav class="sidebar-nav">
     <?php foreach ($navItems as $key => $item): ?>
       <a href="<?= $basePath . $item['href'] ?>" class="sidebar-nav__link<?= nav_active($key, $activeNav) ?>">
-        <?= nav_icon($item['icon']) ?>
+        <?= nav_icon_or_avatar($key, $item, $userPhotoUrl, 'nav-icon') ?>
         <span class="sidebar-nav__label"><?= $item['label'] ?></span>
       </a>
     <?php endforeach; ?>
@@ -111,7 +142,7 @@ $logoutIcon = '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 1
 <nav class="bottom-nav" aria-label="Primary navigation">
   <?php foreach ($navItems as $key => $item): ?>
     <a href="<?= $basePath . $item['href'] ?>" class="bottom-nav__link<?= nav_active($key, $activeNav) ?>">
-      <?= nav_icon($item['icon'], 'nav-icon nav-icon--bottom') ?>
+      <?= nav_icon_or_avatar($key, $item, $userPhotoUrl, 'nav-icon nav-icon--bottom') ?>
       <span class="bottom-nav__label"><?= $item['label'] ?></span>
     </a>
   <?php endforeach; ?>
